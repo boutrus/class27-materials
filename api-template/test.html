@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>NASA APOD API Demo</title>
+  </head>
+  <body>
+    <h1>NASA Astronomy Picture of the Day</h1>
+    <form>
+      <label for="date">Select a date:</label>
+      <input type="date" id="date" name="date">
+      <button type="submit">Fetch APOD</button>
+    </form>
+    <div id="apod"></div>
+
+    <script>
+      const apiKey = 'oS9JvwAXjGdKx0pnq5w1qgDxYegGTDH118cv2oo6';
+      const apiUrl = 'https://api.nasa.gov/planetary/apod';
+
+      // Handle form submit event
+      document.querySelector('form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const date = document.getElementById('date').value;
+        fetch(`${apiUrl}?api_key=${apiKey}&date=${date}`)
+          .then(response => response.json())
+          .then(data => {
+            // Check if the media type is image or video
+            if (data.media_type === 'image') {
+              // Display the image
+              document.getElementById('apod').innerHTML = `<img src="${data.url}" alt="${data.title}">`;
+            } else if (data.media_type === 'video') {
+              // Display the video
+              document.getElementById('apod').innerHTML = `
+                <iframe width="560" height="315" src="${data.url}" frameborder="0" allowfullscreen></iframe>
+              `;
+            } else {
+              // Unsupported media type
+              document.getElementById('apod').innerHTML = `<p>Unsupported media type: ${data.media_type}</p>`;
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            document.getElementById('apod').innerHTML = `<p>Error fetching data from the NASA APOD API</p>`;
+          });
+      });
+    </script>
+  </body>
+</html>
